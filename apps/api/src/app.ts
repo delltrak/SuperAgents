@@ -2,6 +2,7 @@ import { rm } from "node:fs/promises";
 import { RPCHandler } from "@orpc/server/fetch";
 import type { JobPublisher, RealtimeFanout, SandboxProvider } from "@rakazo/adapter-kit";
 import {
+  CodexAgentRuntime,
   type ComposioConnector,
   createBackgroundJobHandlers,
   createConnectorStack,
@@ -85,7 +86,11 @@ export async function createApp(
   await connector.start();
   void stack.composio?.warmDirectory().catch(() => undefined);
   const runtime =
-    env.agentRuntime === "scripted" ? new ScriptedAgentRuntime() : new PiAgentRuntime();
+    env.agentRuntime === "scripted"
+      ? new ScriptedAgentRuntime()
+      : env.agentRuntime === "codex" || env.agentRuntime === "codex-app-server"
+        ? new CodexAgentRuntime()
+        : new PiAgentRuntime();
   const notifications = new ExpoPushProvider(env.dataDir);
   const auth = createAuth(prisma, {
     secret: env.authSecret,

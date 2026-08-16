@@ -4,6 +4,7 @@ import { loadRootEnv } from "@rakazo/core/node/load-root-env";
 loadRootEnv();
 
 import {
+  CodexAgentRuntime,
   createBackgroundJobHandlers,
   createConnectorStack,
   createJobReconciler,
@@ -35,7 +36,11 @@ async function main() {
   });
   const events = createThreadEvents(prisma, realtime);
   const runtime =
-    process.env.AGENT_RUNTIME === "scripted" ? new ScriptedAgentRuntime() : new PiAgentRuntime();
+    process.env.AGENT_RUNTIME === "scripted"
+      ? new ScriptedAgentRuntime()
+      : process.env.AGENT_RUNTIME === "codex" || process.env.AGENT_RUNTIME === "codex-app-server"
+        ? new CodexAgentRuntime()
+        : new PiAgentRuntime();
   const dataDir = process.env.DATA_DIR ?? "./data";
   const sandbox = createRunSandbox(process.env.SANDBOX_PROVIDER ?? "docker", {
     supervisorUrl: process.env.SANDBOX_SUPERVISOR_URL ?? "http://127.0.0.1:7091",

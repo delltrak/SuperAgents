@@ -62,7 +62,7 @@ services:
       SANDBOX_SUPERVISOR_URL: http://supervisor:7091
       WAKEUP_DRIVER: graphile
       SANDBOX_PROVIDER: docker
-      AGENT_RUNTIME: pi
+      AGENT_RUNTIME: ${AGENT_RUNTIME:-pi}
     ports:
       - "3100:3100"
     volumes:
@@ -86,7 +86,7 @@ services:
       SANDBOX_SUPERVISOR_URL: http://supervisor:7091
       WAKEUP_DRIVER: graphile
       SANDBOX_PROVIDER: docker
-      AGENT_RUNTIME: pi
+      AGENT_RUNTIME: ${AGENT_RUNTIME:-pi}
     volumes:
       - ../../data:/data
     depends_on:
