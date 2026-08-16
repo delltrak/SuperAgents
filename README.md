@@ -72,6 +72,20 @@ You want `"runtime":"pi"`, `"sandbox":"docker"`, `"jobs":"graphile"`, and `"real
 
 Product defaults are Pi + Docker + Graphile. `pnpm test` pins the emulators (`AGENT_RUNTIME=scripted`, `SANDBOX_PROVIDER=fake`, `WAKEUP_DRIVER=memory`) so default tests never call live models or Composio.
 
+### Codex App Server runtime
+
+Rakazo can use the local Codex App Server as its agent runtime. Install and authenticate the Codex CLI in the same environment as the API and worker, then set:
+
+```env
+AGENT_RUNTIME=codex
+CODEX_APP_SERVER_BIN=codex
+CODEX_APP_SERVER_ARGS=app-server --stdio
+```
+
+Each Rakazo run starts an App Server connection over JSONL/stdio, performs the `initialize` → `initialized` handshake, creates an ephemeral Codex thread, and streams its turn back into the Rakazo thread. Rakazo exposes its own `shell`, `write_file`, memory, takeover, and plugin tools as Codex dynamic tools, so those effects still go through the configured Docker, E2B, or desktop provider. Native Codex host file/command actions run in read-only mode and are declined when they request approval.
+
+`CODEX_DEFAULT_MODEL` is optional; when unset, Codex App Server uses its configured default model. The Codex CLI must be available inside the API/worker container when using Docker Compose; the repository does not install or authenticate that external CLI for you.
+
 ### Computer and app modes
 
 The app you open and the computer provider are separate choices. Web, Electron, and mobile are clients of the same API. Docker stays the default. In the Electron app the deployment owner is asked once whether bots should keep using Docker or run on this Mac as you.

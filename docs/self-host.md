@@ -43,6 +43,21 @@ SANDBOX_COMMAND_TIMEOUT_MS=300000 # stop a shell command after 5 minutes
 E2B_API_KEY=              # when SANDBOX_PROVIDER=e2b
 ```
 
+### Codex App Server
+
+Set `AGENT_RUNTIME=codex` to route agent turns through a locally installed and authenticated `codex app-server` process. The API/worker launches it over stdio using JSONL and maps Rakazo tools into the App Server's experimental dynamic-tool protocol:
+
+```env
+AGENT_RUNTIME=codex
+CODEX_APP_SERVER_BIN=codex
+CODEX_APP_SERVER_ARGS=app-server --stdio
+CODEX_DEFAULT_MODEL=
+```
+
+The executable and its Codex authentication state must be present in the API/worker environment. For Docker Compose deployments, extend `infra/compose/Dockerfile` or use an image that already contains the Codex CLI and its credentials; the default image intentionally does not install a third-party CLI or copy a host login into a container.
+
+Rakazo's dynamic tools remain the path for sandboxed shell commands, file writes, memory, connected apps, and user takeover. Native Codex shell/file actions are configured as read-only and approval requests are declined by the adapter. This runtime starts an ephemeral Codex thread per Rakazo run and supplies Rakazo's persisted conversation as context, so Rakazo remains the source of truth for its own history and memory.
+
 Do not commit `.env`. Never put `COMPOSIO_API_KEY`, OpenRouter keys, or provider tokens in git, logs, or chat.
 
 ## Choosing a computer provider

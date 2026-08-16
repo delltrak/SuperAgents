@@ -234,6 +234,7 @@ export interface AgentRunRequest {
   botId: string;
   threadId: string;
   runId: string;
+  workspaceRoot?: string;
   prompt: string;
   instructions: string;
   history: Array<{ role: "user" | "assistant" | "system"; content: string }>;
